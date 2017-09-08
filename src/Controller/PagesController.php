@@ -14,6 +14,7 @@
  */
 namespace App\Controller;
 
+use Aura\Intl\Exception;
 use Cake\Core\Configure;
 use Cake\Network\Exception\ForbiddenException;
 use Cake\Network\Exception\NotFoundException;
@@ -67,37 +68,51 @@ class PagesController extends AppController
 			$emailEnviado = false;
 			$videoEncontrado = false;
 
+			$tempoNecessario = 2 * 60;
+
 			foreach ($videosEnviar as $json)
 			{
-				if ($json != "." && $json != ".." && strpos($json, ".json") !== false)
-				{
-					$video = str_replace(".json", ".mp4", $json);
-
-					$destino = json_decode(file_get_contents($diretorioVideosEnviar . $json), true);
-
-					$dados = [
-						"assunto" => "Salamitos no Rock in Rio",
-						"corpo_email" => "Confira seu vídeo personalizado de Salamitos no Rock in Rio.",
-						"video" => $diretorioVideosEnviar . $video,
-						"email_destino" => $destino["email"],
-						"nome_destino" => $destino["username"]
-					];
-
-					$email = $this->enviarEmail($dados);
-
-					if ($email["dados"]["enviado"])
+				try {
+					if ($json != "." && $json != ".." && strpos($json, ".json") !== false)
 					{
-						rename($diretorioVideosEnviar . $json, $diretorioVideosEnviados . $json);
-						rename($diretorioVideosEnviar . $video, $diretorioVideosEnviados . $video);
+						$video = str_replace(".json", ".mp4", $json);
 
-						echo "Vídeo <b>" . $video . "</b> enviado para <b>" . $destino["username"] . "</b> (<b>" . $destino["email"] . "</b>).";
+						$criadoEm = filemtime($diretorioVideosEnviar . $video);
 
-						$emailEnviado = true;
+						$processar = ($criadoEm + $tempoNecessario) < time();
+
+						if (!$processar)
+							continue;
+
+						$destino = json_decode(file_get_contents($diretorioVideosEnviar . $json), true);
+
+						$dados = [
+							"assunto" => "Salamitos no Rock in Rio",
+							"corpo_email" => "Confira seu vídeo personalizado de Salamitos no Rock in Rio.",
+							"video" => $diretorioVideosEnviar . $video,
+							"email_destino" => $destino["email"],
+							"nome_destino" => $destino["username"]
+						];
+
+						$email = $this->enviarEmail($dados);
+
+						if ($email["dados"]["enviado"])
+						{
+							rename($diretorioVideosEnviar . $json, $diretorioVideosEnviados . $json);
+							rename($diretorioVideosEnviar . $video, $diretorioVideosEnviados . $video);
+
+							echo "Vídeo <b>" . $video . "</b> enviado para <b>" . $destino["username"] . "</b> (<b>" . $destino["email"] . "</b>).";
+
+							$emailEnviado = true;
+						}
+
+						$videoEncontrado = true;
+
+						break;
 					}
-
-					$videoEncontrado = true;
-
-					break;
+				}
+				catch (Exception $e) {
+					//echo 'Erro encontrado: ',  $e->getMessage(), "<br>";
 				}
 			}
 
