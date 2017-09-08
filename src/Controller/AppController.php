@@ -80,7 +80,7 @@ class AppController extends Controller
 
 		$dadosPadroes = [
 			"email_remetente" => "smtp@tgroups.com.br",
-			"nome_remetente" => "Salamitos Rir Remetente",
+			"nome_remetente" => "Salamitos - Rock In Rio",
 			"email_destino" => "paulo.salvatore@tgroups.com.br",
 			"nome_destino" => "Paulo Salvatore",
 			"assunto" => "Assunto"
@@ -90,7 +90,7 @@ class AppController extends Controller
 			if (!isset($dados[$chave]))
 				$dados[$chave] = $valor;
 
-		$dados["corpo_email"] .= 'Mensagem enviada em ' . Time::now() . '.';
+		//$dados["corpo_email"] .= 'Mensagem enviada em ' . Time::now() . '.';
 
 		$mail = new PHPMailer();
 

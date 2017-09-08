@@ -1,3 +1,7 @@
+body {
+	margin: 10px;
+}
+
 .disabled a,
 a.disabled {
     pointer-events: none;

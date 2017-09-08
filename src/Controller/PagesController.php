@@ -76,7 +76,8 @@ class PagesController extends AppController
 					$destino = json_decode(file_get_contents($diretorioVideosEnviar . $json), true);
 
 					$dados = [
-						"corpo_email" => "Corpo do E-mail<br>",
+						"assunto" => "Salamitos no Rock in Rio",
+						"corpo_email" => "Confira seu vídeo personalizado de Salamitos no Rock in Rio.",
 						"video" => $diretorioVideosEnviar . $video,
 						"email_destino" => $destino["email"],
 						"nome_destino" => $destino["username"]
@@ -89,7 +90,7 @@ class PagesController extends AppController
 						rename($diretorioVideosEnviar . $json, $diretorioVideosEnviados . $json);
 						rename($diretorioVideosEnviar . $video, $diretorioVideosEnviados . $video);
 
-						echo "Vídeo " . $video . " enviado para " . $destino["username"] . " (" . $destino["email"] . ").";
+						echo "Vídeo <b>" . $video . "</b> enviado para <b>" . $destino["username"] . "</b> (<b>" . $destino["email"] . "</b>).";
 
 						$emailEnviado = true;
 					}
@@ -105,7 +106,7 @@ class PagesController extends AppController
 			elseif (!$emailEnviado)
 				echo 'Um vídeo foi encontrado mas o e-mail não foi enviado';
 
-			echo'<meta http-equiv="refresh" content="1">';
+			echo '<meta http-equiv="refresh" content="1">';
 		}
 
         $this->set(compact('page', 'subpage'));
